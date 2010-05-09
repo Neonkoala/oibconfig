@@ -72,25 +72,6 @@
 
 }
 
--(IBAction) getnew:(id) sender {
-	NSString* results = @"Get new NVRAM results:\n";
-	
-	id mynvramutils;
-	mynvramutils=[nvramutils new];
-	
-	NSString* freshPath = @"/var/mobile/Documents/NVRAM.xml";
-	
-	int getnew = [mynvramutils getNVRAM:freshPath];
-	
-	if (getnew==0) {
-		results = [results stringByAppendingString:@"New working copy created.\n"];
-	} else {
-		results = [results stringByAppendingString:@"Failed to obtain fresh NVRAM.\n"];
-	}
-	
-	cmdResult.text = results;
-}
- 
 -(IBAction) update:(id) sender {
 	NSString* results = @"Update NVRAM results:\n";
 	
@@ -107,21 +88,6 @@
 	
 	results = [results stringByAppendingString:cmdout];
 		
-	cmdResult.text = results;
-}
-
--(IBAction) parsexml:(id) sender {
-	NSString* results = @"Parse XML results:\n";
-	
-	id mynvramutils;
-	mynvramutils=[nvramutils new];
-	
-	NSString* xmlPath = @"/var/mobile/Documents/NVRAM.xml";
-	
-	[mynvramutils parseNVRAMXML:xmlPath];
-	
-	//results = [results stringByAppendingString:randstring];
-	
 	cmdResult.text = results;
 }
 

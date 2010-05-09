@@ -1,0 +1,24 @@
+oibconfig
+
+This is an iPhone app to reconfigure certain versions of openiboot to toggle
+features such as auto-boot, default OS and the timeout before they boot.
+
+WARNING: This could seriously damage your iDevice. Do not use if you don't know
+	 what it is!
+
+Requirements
+
+This requires a SPECIFIC version of openiboot to be installed. I will be
+maintaining a version compatible on my github until the changes reach planetbeing's
+master repo. Apocolipse's openiboot should be compatible too.
+
+http://github.com/Neonkoala/iphonelinux
+
+http://github.com/apocolipse/iphonelinux
+
+Usage
+
+The application will autmatically back up the settings upon first boot
+however at this current stage I highly recommend dumping a copy of your NVRAM
+using 'nvram -x -p | /var/nvram.plist'. I would also advise dumping your NOR
+from the openiboot console as openiboot is a bit brutish with the NVRAM currently.

@@ -43,9 +43,7 @@ extern NSMutableArray* nvramconfig;
 - (IBAction) tapConsole:(id)sender;
 - (IBAction) timeoutSliderValueChanged:(id)sender;
 - (IBAction) backup:(id) sender;
-- (IBAction) getnew:(id) sender;
 - (IBAction) update:(id) sender;
-- (IBAction) parsexml:(id) sender;
 
 @end
 

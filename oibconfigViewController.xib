@@ -194,29 +194,6 @@
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
 					</object>
-					<object class="IBUIButton" id="424060108">
-						<reference key="NSNextResponder" ref="774585933"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{118, 275}, {83, 37}}</string>
-						<reference key="NSSuperview" ref="774585933"/>
-						<bool key="IBUIOpaque">NO</bool>
-						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-						<int key="IBUIContentHorizontalAlignment">0</int>
-						<int key="IBUIContentVerticalAlignment">0</int>
-						<object class="NSFont" key="IBUIFont">
-							<string key="NSName">Helvetica-Bold</string>
-							<double key="NSSize">12</double>
-							<int key="NSfFlags">16</int>
-						</object>
-						<int key="IBUIButtonType">1</int>
-						<string key="IBUINormalTitle">ParseXML</string>
-						<reference key="IBUIHighlightedTitleColor" ref="143731940"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
-						</object>
-						<reference key="IBUINormalTitleShadowColor" ref="471474552"/>
-					</object>
 					<object class="IBUILabel" id="614531539">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">-2147483356</int>
@@ -305,7 +282,7 @@
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
 					</object>
-					<object class="IBUIButton" id="373706968">
+					<object class="IBUIButton" id="273172689">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{219, 20}, {80, 80}}</string>
@@ -328,7 +305,7 @@
 							<string key="NSResourceName">console.png</string>
 						</object>
 					</object>
-					<object class="IBUIButton" id="897059829">
+					<object class="IBUIButton" id="601966011">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{20, 20}, {80, 80}}</string>
@@ -350,7 +327,7 @@
 							<string key="NSResourceName">iphoneos.png</string>
 						</object>
 					</object>
-					<object class="IBUIButton" id="544482898">
+					<object class="IBUIButton" id="45280488">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{120, 20}, {80, 80}}</string>
@@ -455,15 +432,6 @@
 					<int key="connectionID">39</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">parsexml:</string>
-						<reference key="source" ref="424060108"/>
-						<reference key="destination" ref="372490531"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">41</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">iphoneosLabel</string>
 						<reference key="source" ref="372490531"/>
@@ -499,7 +467,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">consoleImage</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="373706968"/>
+						<reference key="destination" ref="273172689"/>
 					</object>
 					<int key="connectionID">64</int>
 				</object>
@@ -507,7 +475,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">iphoneosImage</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="897059829"/>
+						<reference key="destination" ref="601966011"/>
 					</object>
 					<int key="connectionID">67</int>
 				</object>
@@ -515,14 +483,14 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">androidImage</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="544482898"/>
+						<reference key="destination" ref="45280488"/>
 					</object>
 					<int key="connectionID">68</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">tapIphoneos:</string>
-						<reference key="source" ref="897059829"/>
+						<reference key="source" ref="601966011"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
@@ -531,7 +499,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">tapAndroid:</string>
-						<reference key="source" ref="544482898"/>
+						<reference key="source" ref="45280488"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
@@ -540,7 +508,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">tapConsole:</string>
-						<reference key="source" ref="373706968"/>
+						<reference key="source" ref="273172689"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
@@ -575,7 +543,6 @@
 							<reference ref="823429290"/>
 							<reference ref="109632023"/>
 							<reference ref="200950416"/>
-							<reference ref="424060108"/>
 							<reference ref="614531539"/>
 							<reference ref="681760741"/>
 							<reference ref="88309519"/>
@@ -588,9 +555,9 @@
 							<reference ref="627243370"/>
 							<reference ref="702537073"/>
 							<reference ref="645060640"/>
-							<reference ref="373706968"/>
-							<reference ref="897059829"/>
-							<reference ref="544482898"/>
+							<reference ref="273172689"/>
+							<reference ref="601966011"/>
+							<reference ref="45280488"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -632,11 +599,6 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">35</int>
 						<reference key="object" ref="702537073"/>
-						<reference key="parent" ref="774585933"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">40</int>
-						<reference key="object" ref="424060108"/>
 						<reference key="parent" ref="774585933"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -685,17 +647,17 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">63</int>
-						<reference key="object" ref="373706968"/>
+						<reference key="object" ref="273172689"/>
 						<reference key="parent" ref="774585933"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">65</int>
-						<reference key="object" ref="897059829"/>
+						<reference key="object" ref="601966011"/>
 						<reference key="parent" ref="774585933"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">66</int>
-						<reference key="object" ref="544482898"/>
+						<reference key="object" ref="45280488"/>
 						<reference key="parent" ref="774585933"/>
 					</object>
 				</object>
@@ -714,7 +676,6 @@
 					<string>29.IBPluginDependency</string>
 					<string>34.IBPluginDependency</string>
 					<string>35.IBPluginDependency</string>
-					<string>40.IBPluginDependency</string>
 					<string>46.IBPluginDependency</string>
 					<string>47.IBPluginDependency</string>
 					<string>48.IBPluginDependency</string>
@@ -733,7 +694,6 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>oibconfigViewController</string>
 					<string>UIResponder</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
