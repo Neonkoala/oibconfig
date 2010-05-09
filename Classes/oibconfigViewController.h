@@ -15,8 +15,11 @@ extern NSMutableArray* nvramconfig;
 
 @interface oibconfigViewController : UIViewController {
 	IBOutlet UILabel *iphoneosLabel;
+	IBOutlet UIButton *iphoneosImage;
 	IBOutlet UILabel *androidLabel;
+	IBOutlet UIButton *androidImage;
 	IBOutlet UILabel *consoleLabel;
+	IBOutlet UIButton *consoleImage;
 	IBOutlet UISwitch *autobootToggle;
 	IBOutlet UISlider *timeoutSlider;
 	IBOutlet UILabel *timeoutValue;
@@ -25,13 +28,19 @@ extern NSMutableArray* nvramconfig;
 }
 
 @property(nonatomic,retain) IBOutlet UILabel *iphoneosLabel;
+@property(nonatomic,retain) IBOutlet UIButton *iphoneosImage;
 @property(nonatomic,retain) IBOutlet UILabel *androidLabel;
+@property(nonatomic,retain) IBOutlet UIButton *androidImage;
 @property(nonatomic,retain) IBOutlet UILabel *consoleLabel;
+@property(nonatomic,retain) IBOutlet UIButton *consoleImage;
 @property(nonatomic,retain) IBOutlet UISwitch *autobootToggle;
 @property(nonatomic,retain) IBOutlet UISlider *timeoutSlider;
 @property(nonatomic,retain) IBOutlet UILabel *timeoutValue;
 @property(nonatomic,retain) IBOutlet UITextView *cmdResult;
 
+- (IBAction) tapIphoneos:(id)sender;
+- (IBAction) tapAndroid:(id)sender;
+- (IBAction) tapConsole:(id)sender;
 - (IBAction) timeoutSliderValueChanged:(id)sender;
 - (IBAction) backup:(id) sender;
 - (IBAction) getnew:(id) sender;

@@ -12,6 +12,42 @@
 
 @synthesize timeoutSlider, timeoutValue, cmdResult;
 
+-(IBAction) tapIphoneos:(id)sender {
+	iphoneosImage.alpha = 1.0;
+	iphoneosLabel.hidden = NO;
+	androidImage.alpha = 0.3;
+	androidLabel.hidden = YES;
+	consoleImage.alpha = 0.3;
+	consoleLabel.hidden = YES;
+	
+	dataclass *thisconfig = [dataclass nvramconfig];
+	thisconfig.defaultos = @"0";
+}
+
+-(IBAction) tapAndroid:(id)sender {
+	iphoneosImage.alpha = 0.3;
+	iphoneosLabel.hidden = YES;
+	androidImage.alpha = 1.0;
+	androidLabel.hidden = NO;
+	consoleImage.alpha = 0.3;
+	consoleLabel.hidden = YES;
+	
+	dataclass *thisconfig = [dataclass nvramconfig];
+	thisconfig.defaultos = @"1";
+}
+
+-(IBAction) tapConsole:(id)sender {
+	iphoneosImage.alpha = 0.3;
+	iphoneosLabel.hidden = YES;
+	androidImage.alpha = 0.3;
+	androidLabel.hidden = YES;
+	consoleImage.alpha = 1.0;
+	consoleLabel.hidden = NO;
+	
+	dataclass *thisconfig = [dataclass nvramconfig];
+	thisconfig.defaultos = @"2";
+}
+
 -(IBAction) timeoutSliderValueChanged:(UISlider *)sender {
 	timeoutValue.text = [NSString stringWithFormat:@"%.1f", [sender value]];
 }
@@ -125,17 +161,21 @@
 	
 	switch (os) {
 		case 0:
+			iphoneosImage.alpha = 1.0;
 			iphoneosLabel.hidden = NO;
 			break;
 		case 1:
+			androidImage.alpha = 1.0;
 			androidLabel.hidden = NO;
 			break;
 		case 2:
+			consoleImage.alpha = 1.0;
 			consoleLabel.hidden	= NO;
 			break;
 
 		default:
 			//Otherwise set default iphone and send uialert erroring
+			iphoneosImage.alpha = 1.0;
 			iphoneosLabel.hidden = NO;
 			break;
 	}

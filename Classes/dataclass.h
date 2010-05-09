@@ -10,11 +10,13 @@
 
 
 @interface dataclass : NSObject {
+	NSString *opibversion;
 	NSString *timeout;
 	NSString *defaultos;
 	NSString *autoboot;
 }
 
+@property (nonatomic, retain) NSString *opibversion;
 @property (nonatomic, retain) NSString *timeout;
 @property (nonatomic, retain) NSString *defaultos;
 @property (nonatomic, retain) NSString *autoboot;

@@ -12,6 +12,7 @@ static dataclass *nvramconfig = nil;
 
 @implementation dataclass
 
+@synthesize opibversion;
 @synthesize timeout;
 @synthesize defaultos;
 @synthesize autoboot;
@@ -50,6 +51,7 @@ static dataclass *nvramconfig = nil;
 }
 - (id)init {
 	if (self = [super init]) {
+		opibversion = [[NSString  alloc] initWithString:@""];
 		timeout = [[NSString  alloc] initWithString:@""];
 		defaultos = [[NSString  alloc] initWithString:@""];
 		autoboot = [[NSString alloc] initWithString:@""];
@@ -57,6 +59,7 @@ static dataclass *nvramconfig = nil;
 	return nil;
 }
 - (void)dealloc {
+	[opibversion release];
 	[timeout release];
 	[defaultos release];
 	[autoboot release];

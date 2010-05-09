@@ -90,7 +90,6 @@ install: dist
 	scp -r $(BUILDDIR)/$(APPFOLDER) root@$(IPHONE_IP):/Applications/$(INSTALLFOLDER)
 	@echo "Application $(INSTALLFOLDER) installed, please respring iPhone"
 	ssh root@$(IPHONE_IP) 'respring'
-	ssh root@$(IPHONE_IP) 'ldid -S /Applications/oibconfig.app/oibconfig'
 	ssh root@$(IPHONE_IP) 'chmod +s /Applications/oibconfig.app/oibconfig'
 
 uninstall:

@@ -123,6 +123,13 @@
 	
 	NSLog(@"%@", dictnvram);
 	
+	NSData* rawversion = [dictnvram objectForKey:@"opib-version"];
+	//Check openiboot is installed before we go any further
+	if (rawversion==nil) {
+		return -1;
+	}
+	
+	NSString* version = [NSString stringWithCString:[rawversion bytes] encoding:NSUTF8StringEncoding];
 	NSData* rawtimeout = [dictnvram objectForKey:@"opib-menu-timeout"];
 	NSString* timeout = [NSString stringWithCString:[rawtimeout bytes] encoding:NSUTF8StringEncoding];
 	NSData* rawdefaultos = [dictnvram objectForKey:@"opib-default-os"];
@@ -130,12 +137,14 @@
 	NSData* rawautoboot = [dictnvram objectForKey:@"opib-auto-boot"];
 	NSString* autoboot = [NSString stringWithCString:[rawautoboot bytes] encoding:NSUTF8StringEncoding];
 	
+	NSLog(@"%@", version);
 	NSLog(@"%@", timeout);
 	NSLog(@"%@", defaultos);
 	NSLog(@"%@", autoboot);
 	
 	dataclass *thisconfig = [dataclass nvramconfig];
 	
+	thisconfig.opibversion = version;
 	thisconfig.timeout = timeout;
 	thisconfig.defaultos = defaultos;
 	thisconfig.autoboot = autoboot;
@@ -166,9 +175,12 @@
 	
 	int parsed = [grabnvramutils parseNVRAMXML:xmlPath];
 	
-	if (parsed!=0) {
-		NSLog(@"Failed to parse NVRAM dump.");
+	if (parsed==-1) {
+		NSLog(@"Openiboot not installed. Aborting.");
 		return -3;
+	} else if (parsed!=0) {
+		NSLog(@"Failed to parse NVRAM dump.");
+		return -4;
 	}
 	
 	return 0;
