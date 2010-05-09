@@ -49,7 +49,23 @@
 }
 
 -(IBAction) timeoutSliderValueChanged:(UISlider *)sender {
-	timeoutValue.text = [NSString stringWithFormat:@"%.1f", [sender value]];
+	timeoutValue.text = [NSString stringWithFormat:@"%1.0f", [sender value]];
+	
+	dataclass *thisconfig = [dataclass nvramconfig];
+	thisconfig.timeout = [NSString stringWithFormat:@"%1.0f", [sender value]*1000];
+}
+
+-(IBAction) changeAutoboot:(id)sender {
+	dataclass *thisconfig = [dataclass nvramconfig];
+	
+	if (autobootToggle.on) {
+		timeoutSlider.enabled = YES;
+		thisconfig.autoboot = @"1";
+		
+	} else {
+		timeoutSlider.enabled = NO;
+		thisconfig.autoboot = @"0";
+	}	
 }
 
 -(IBAction) backup:(id) sender {
@@ -69,22 +85,29 @@
 	}
 
 	cmdResult.text = results;
-
 }
 
--(IBAction) update:(id) sender {
+-(IBAction) restore:(id) sender {
+}
+
+-(IBAction) apply:(id) sender {
 	NSString* results = @"Update NVRAM results:\n";
 	
 	id mynvramutils;
 	mynvramutils=[nvramutils new];
 	
-	NSString* updatePath = @"/var/mobile/Documents/NVRAM.xml";
+	NSString* updatePath = @"/var/mobile/Documents/NVRAM.plist";
 	NSString* cmdout;
 	
-	results = [results stringByAppendingString:updatePath];
-	results = [results stringByAppendingString:@"\n"];
+	int generated = [mynvramutils generateNVRAM:updatePath];
 	
-	[mynvramutils updateNVRAM:updatePath usingOutput:&cmdout];
+	if (generated==-1) {
+		UIAlertView* invalidplist = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Invalid plist generated." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[invalidplist show];
+		[invalidplist release];
+	} else if (generated==0) {
+		[mynvramutils updateNVRAM:updatePath usingOutput:&cmdout];
+	}
 	
 	results = [results stringByAppendingString:cmdout];
 		
@@ -140,9 +163,11 @@
 			break;
 
 		default:
-			//Otherwise set default iphone and send uialert erroring
 			iphoneosImage.alpha = 1.0;
 			iphoneosLabel.hidden = NO;
+			UIAlertView* defaultosinvalid = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Default OS setting invalid. Using iPhone OS." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+			[defaultosinvalid show];
+			[defaultosinvalid release];
 			break;
 	}
 	

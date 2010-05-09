@@ -41,9 +41,11 @@ extern NSMutableArray* nvramconfig;
 - (IBAction) tapIphoneos:(id)sender;
 - (IBAction) tapAndroid:(id)sender;
 - (IBAction) tapConsole:(id)sender;
+- (IBAction) changeAutoboot:(id)sender;
 - (IBAction) timeoutSliderValueChanged:(id)sender;
 - (IBAction) backup:(id) sender;
-- (IBAction) update:(id) sender;
+- (IBAction) restore:(id) sender;
+- (IBAction) apply:(id) sender;
 
 @end
 

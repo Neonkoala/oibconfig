@@ -1,4 +1,7 @@
 oibconfig
+by Neonkoala
+
+Credits: planetbeing for openiboot, poorlad for images and apocolipse for openiboot modifications
 
 This is an iPhone app to reconfigure certain versions of openiboot to toggle
 features such as auto-boot, default OS and the timeout before they boot.

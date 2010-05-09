@@ -18,8 +18,8 @@
 - (int) backupNVRAM;
 - (int) getNVRAM:(NSString*)filePath;
 - (int) updateNVRAM:(NSString*)filePath usingOutput:(NSString**)cmdout;
-//- (int) generateNVRAMXML;
-- (int) parseNVRAMXML:(NSString*)filePath;
+- (int) parseNVRAM:(NSString*)filePath;
+- (int) generateNVRAM:(NSString*)filePath;
 - (int) grabNVRAM;
 
 @end

@@ -13,14 +13,14 @@
 - (int) backupNVRAM
 {
 	//check for backup first
-	NSString* nvrambackup = @"/var/mobile/Documents/nvram.xml.backup";
+	NSString* nvrambackup = @"/var/mobile/Documents/nvram.plist.backup";
 	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:nvrambackup];
 	
 	if(!fileExists){
 		id mynvramutils;
 		mynvramutils=[nvramutils new];
 
-		NSString *filePath = @"/var/mobile/Documents/nvram.xml.backup";
+		NSString *filePath = @"/var/mobile/Documents/nvram.plist.backup";
 		
 		int gotNVRAM = [mynvramutils getNVRAM: filePath];
 
@@ -117,7 +117,7 @@
 	}
 }
 
-- (int) parseNVRAMXML:(NSString*)filePath
+- (int) parseNVRAM:(NSString*)filePath
 {
 	NSMutableDictionary* dictnvram = [NSMutableDictionary dictionaryWithContentsOfFile:filePath];
 	
@@ -152,6 +152,30 @@
 	return 0;
 }
 
+- (int) generateNVRAM:(NSString *)filePath
+{
+	NSMutableDictionary* dictnvram = [NSMutableDictionary dictionaryWithContentsOfFile:filePath];
+	dataclass *thisconfig = [dataclass nvramconfig];
+	
+	NSLog(@"Old nvramconfig");
+	NSLog(@"%@", dictnvram);
+	
+	NSData *rawtimeout = [thisconfig.timeout dataUsingEncoding:NSUTF8StringEncoding];
+	NSData *rawdefaultos = [thisconfig.defaultos dataUsingEncoding:NSUTF8StringEncoding];
+	NSData *rawautoboot = [thisconfig.autoboot dataUsingEncoding:NSUTF8StringEncoding];
+	
+	if (rawtimeout!=nil && rawdefaultos!=nil && rawautoboot!=nil) {
+		[dictnvram setObject:rawtimeout forKey:@"opib-menu-timeout"];
+		[dictnvram setObject:rawdefaultos forKey:@"opib-default-os"];
+		[dictnvram setObject:rawautoboot forKey:@"opib-auto-boot"];	
+		[dictnvram writeToFile:filePath atomically:NO];
+	} else {
+		return -1;
+	}
+	
+	return 0;
+}
+
 - (int) grabNVRAM
 {
 	id grabnvramutils;
@@ -164,16 +188,16 @@
 		return -1;
 	}
 	
-	NSString* xmlPath = @"/var/mobile/Documents/NVRAM.xml";
+	NSString* plistPath = @"/var/mobile/Documents/NVRAM.plist";
 	
-	int getnew = [grabnvramutils getNVRAM:xmlPath];
+	int getnew = [grabnvramutils getNVRAM:plistPath];
 	
 	if (getnew!=0) {
 		NSLog(@"Failed to obtain working copy of NVRAM.");
 		return -2;
 	}
 	
-	int parsed = [grabnvramutils parseNVRAMXML:xmlPath];
+	int parsed = [grabnvramutils parseNVRAM:plistPath];
 	
 	if (parsed==-1) {
 		NSLog(@"Openiboot not installed. Aborting.");
