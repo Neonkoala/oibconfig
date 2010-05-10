@@ -45,6 +45,7 @@ extern NSMutableArray* nvramconfig;
 - (IBAction) timeoutSliderValueChanged:(id)sender;
 - (IBAction) backup:(id) sender;
 - (IBAction) restore:(id) sender;
+- (IBAction) reset:(id) sender;
 - (IBAction) apply:(id) sender;
 
 @end

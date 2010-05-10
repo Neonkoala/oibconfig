@@ -10,203 +10,293 @@
 
 @implementation nvramutils
 
-- (int) backupNVRAM
+-(int)nvramHook:(NSString *)filePath withArgs:(NSArray *)arguments withMode:(int)rorw
 {
-	//check for backup first
-	NSString* nvrambackup = @"/var/mobile/Documents/nvram.plist.backup";
-	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:nvrambackup];
+	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+	BOOL run = NO;
+	
+	if(rorw==0 && !fileExists){
+		run = YES;
+	}else if(rorw==1 && fileExists){
+		run = YES;
+	}
+	
+	if(run){	
+		NSTask *hookNVRAM;
+		hookNVRAM = [[NSTask alloc] init];
+		[hookNVRAM setLaunchPath: @"/usr/sbin/nvram"];													//Set binary path
+
+		[hookNVRAM setArguments: arguments];															//Set array of args
+
+		NSPipe *hookNVRAMpipe;																			//Deal with output
+		hookNVRAMpipe = [NSPipe pipe];
+		[hookNVRAM setStandardOutput: hookNVRAMpipe];
+
+		NSFileHandle *hookNVRAMfile;																	//Dumpfile for output
+		hookNVRAMfile = [hookNVRAMpipe fileHandleForReading];
+
+		[hookNVRAM launch];																				//GO!
+		[hookNVRAM waitUntilExit];
+		int status = [hookNVRAM terminationStatus];														//Check termination
+		
+		NSData *hookNVRAMdata;
+		hookNVRAMdata = [hookNVRAMfile readDataToEndOfFile];
+		
+		NSString *string;
+		string = [[NSString alloc] initWithData: hookNVRAMdata encoding: NSUTF8StringEncoding];
+		
+		if(rorw==0){
+			NSError *error = [[NSError alloc] init];													//Dump output to file
+			[string writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+		}
+		
+		if (status==0) {																				//Check termination status of 'nvram'
+			return 0;
+		} else {
+			return -2;
+		}
+	} else {
+		return -1;
+	}
+}
+
+-(int)nvramBackup:(BOOL)withOverwrite
+{
+	NSString *backupPath = @"/var/mobile/Documents/NVRAM.plist.backup";									//Set arbitary backup path
+	NSArray *backupArgs;
+	backupArgs = [NSArray arrayWithObjects: @"-x", @"-p", nil];											//Set flags for XML and dump
+	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:backupPath];						//Check if file has been backed up before
+	
+	if(withOverwrite && fileExists){																	//If file exists and overwrite flags set, delete it
+		if ([[NSFileManager defaultManager] removeItemAtPath:backupPath error: NULL]  == YES) {
+			NSLog(@"Removed old backup");
+		} else {
+			NSLog(@"Failed to remove old backup");
+			return -1;																					//Return -1 if we couldn't
+		}
+	}
+	
+	fileExists = [[NSFileManager defaultManager] fileExistsAtPath:backupPath];							//Check file exists again or BOOL may be incorrect
 	
 	if(!fileExists){
 		id mynvramutils;
 		mynvramutils=[nvramutils new];
-
-		NSString *filePath = @"/var/mobile/Documents/nvram.plist.backup";
 		
-		int gotNVRAM = [mynvramutils getNVRAM: filePath];
-
-		if (gotNVRAM==0) {
-			return 1;
+		int backupSuccess = [mynvramutils nvramHook:backupPath withArgs:backupArgs withMode:0];			//Call the nvram util hook
+		
+		if (backupSuccess==0) {
+			return 0;																					//If dump was successful return 0
 		} else {
-			return -1;
+			return -2;																					//Check if the hook failed
+		}
+	} else {
+		return 1;																						//File existing not technically an error so return 1
+	}
+}
+
+-(int)nvramDump:(NSString *)filePath
+{
+	NSArray *dumpArgs;
+	dumpArgs = [NSArray arrayWithObjects: @"-x", @"-p", nil];											//Set flags for XML and dump
+	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];						//Check if file has been backed up before should be gone
+	
+	if(fileExists){																						//If file exists, delete it
+		if ([[NSFileManager defaultManager] removeItemAtPath:filePath error: NULL]  == YES) {
+			NSLog(@"Removed old working dump");
+		} else {
+			NSLog(@"Failed to remove dump");
+			return -1;																					//Return -1 if we couldn't
 		}
 	}
+	
+	fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];							//Check file exists again or BOOL may be incorrect
+	
+	if(!fileExists){
+		id mynvramutils;
+		mynvramutils=[nvramutils new];
+		
+		int dumpSuccess = [mynvramutils nvramHook:filePath withArgs:dumpArgs withMode:0];				//Call the nvram util hook
+		
+		if (dumpSuccess==0) {
+			return 0;																					//If dump was successful return 0
+		} else {
+			return -2;																					//Check if the hook failed
+		}
+	} else {
+		return -1;																						//File existing is an error so return 1
+	}
+}
+
+-(int)nvramWrite:(NSString *)filePath
+{
+	NSArray *updateArgs;
+	updateArgs = [NSArray arrayWithObjects: @"-x", @"-f", filePath, nil];								//Set write mode args with xml
+	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];						
+	
+	if(fileExists){
+		id mynvramutils;
+		mynvramutils=[nvramutils new];
+		
+		int writeSuccess = [mynvramutils nvramHook:filePath withArgs:updateArgs withMode:1];
+	
+		if (writeSuccess==0) {
+			return 0;																					//If dump was successful return 0
+		} else {
+			return -1;																					//Check if the hook failed
+		}
+	} else {
+		return -2;
+	}
+}
+
+-(int)nvramParse:(NSString *)filePath
+{
+	NSMutableDictionary *nvramDict = [NSMutableDictionary dictionaryWithContentsOfFile:filePath];
+	NSLog(@"%@", nvramDict);
+
+	if (![nvramDict objectForKey:@"platform-uuid"]) {
+		NSLog(@"Failed to get UUID.");
+		return -1;
+	}
+	if (![nvramDict objectForKey:@"opib-version"]) {													//Check openiboot is installed before we go any further
+		NSLog(@"Failed to get opib-version.");
+		return -2;
+	}
+	
+	if (![nvramDict objectForKey:@"opib-menu-timeout"] || ![nvramDict objectForKey:@"opib-default-os"] || ![nvramDict objectForKey:@"opib-auto-boot"]) {
+		return -3;
+	}
+	
+	NSData *rawVersion = [nvramDict objectForKey:@"opib-version"];
+	NSString *version = [NSString stringWithCString:[rawVersion bytes] encoding:NSUTF8StringEncoding];
+	NSData *rawTimeout = [nvramDict objectForKey:@"opib-menu-timeout"];
+	NSString *timeout = [NSString stringWithCString:[rawTimeout bytes] encoding:NSUTF8StringEncoding];
+	NSData *rawDefaultOs = [nvramDict objectForKey:@"opib-default-os"];
+	NSString *defaultOs = [NSString stringWithCString:[rawDefaultOs bytes] encoding:NSUTF8StringEncoding];
+	NSData *rawAutoBoot = [nvramDict objectForKey:@"opib-auto-boot"];
+	NSString *autoBoot = [NSString stringWithCString:[rawAutoBoot bytes] encoding:NSUTF8StringEncoding];
+	
+	dataclass *thisconfig = [dataclass nvramconfig];
+	
+	thisconfig.opibVersion = version;
+	thisconfig.opibTimeout = timeout;
+	thisconfig.opibDefaultOs = defaultOs;
+	thisconfig.opibAutoBoot = autoBoot;
 	
 	return 0;
 }
 
-- (int) getNVRAM: (NSString*)filePath
+-(int)nvramGenerate:(NSString *)filePath
 {
-	NSTask *dumpNVRAM;
-	dumpNVRAM = [[NSTask alloc] init];
-	[dumpNVRAM setLaunchPath: @"/usr/sbin/nvram"];
-	
-	NSArray *dumpNVRAMargs;
-	dumpNVRAMargs = [NSArray arrayWithObjects: @"-x", @"-p", nil];
-	[dumpNVRAM setArguments: dumpNVRAMargs];
-	
-	NSPipe *dumpNVRAMpipe;
-	dumpNVRAMpipe = [NSPipe pipe];
-	[dumpNVRAM setStandardOutput: dumpNVRAMpipe];
-	
-	NSFileHandle *dumpNVRAMfile;
-	dumpNVRAMfile = [dumpNVRAMpipe fileHandleForReading];
-	
-	[dumpNVRAM launch];
-	[dumpNVRAM waitUntilExit];
-	
-	NSData *dumpNVRAMdata;
-	dumpNVRAMdata = [dumpNVRAMfile readDataToEndOfFile];
-	
-	NSString *string;
-	string = [[NSString alloc] initWithData: dumpNVRAMdata encoding: NSUTF8StringEncoding];
-	
-	NSError *error = [[NSError alloc] init];
-	[string writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-	
 	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
 	
-	if (fileExists) {
+	if(!fileExists) {
+		return -1;
+	}
+	
+	NSMutableDictionary* nvramDict = [NSMutableDictionary dictionaryWithContentsOfFile:filePath];
+	dataclass *thisconfig = [dataclass nvramconfig];
+	
+	NSData *rawTimeout = [thisconfig.opibTimeout dataUsingEncoding:NSUTF8StringEncoding];				//Convert utf8 into raw binary
+	NSData *rawDefaultOs = [thisconfig.opibDefaultOs dataUsingEncoding:NSUTF8StringEncoding];
+	NSData *rawAutoBoot = [thisconfig.opibAutoBoot dataUsingEncoding:NSUTF8StringEncoding];
+	
+	if (rawTimeout!=nil && rawDefaultOs!=nil && rawAutoBoot!=nil) {										//Check for data
+		[nvramDict setObject:rawTimeout forKey:@"opib-menu-timeout"];
+		[nvramDict setObject:rawDefaultOs forKey:@"opib-default-os"];
+		[nvramDict setObject:rawAutoBoot forKey:@"opib-auto-boot"];	
+	} else {
+		return -2;																						//Return -2 if null values
+	}
+	
+	if([[NSFileManager defaultManager] removeItemAtPath:filePath error: NULL]  == YES) {										//Remove old plist
+		NSLog(@"Removed old working dump");
+		[nvramDict writeToFile:filePath atomically:YES];												//Write new one
+	} else {
+		NSLog(@"Failed to remove dump");
+		return -3;																						//Return -3 if we couldn't
+	}
+	
+	fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];							//Check for new plist
+	
+	if(fileExists){
 		return 0;
 	} else {
-		return -1;
+		return -4;
 	}
 }
 
-- (int) updateNVRAM:(NSString*)filePath usingOutput:(NSString**)cmdout
-{
-	BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+-(int)nvramInit
+{																										//Initialisation routine for program launch
+	NSString *filePath = @"/var/mobile/Documents/NVRAM.plist";
+	id mynvramutils;
+	mynvramutils=[nvramutils new];
 	
-	if (fileExists) {
-		NSTask *writeNVRAM;
-		writeNVRAM = [[NSTask alloc] init];
-		[writeNVRAM setLaunchPath: @"/usr/sbin/nvram"];
-		
-		NSArray *writeNVRAMargs;
-		writeNVRAMargs = [NSArray arrayWithObjects: @"-x", @"-f", filePath, nil];
-		[writeNVRAM setArguments: writeNVRAMargs];
-		
-		NSPipe *writeNVRAMpipe;
-		writeNVRAMpipe = [NSPipe pipe];
-		[writeNVRAM setStandardOutput: writeNVRAMpipe];
-		
-		NSFileHandle *writeNVRAMfile;
-		writeNVRAMfile = [writeNVRAMpipe fileHandleForReading];
-		
-		[writeNVRAM launch];
-		[writeNVRAM waitUntilExit];
-		int status = [writeNVRAM terminationStatus];
-		
-		NSData *writeNVRAMdata;
-		writeNVRAMdata = [writeNVRAMfile readDataToEndOfFile];
-		
-		NSString *string;
-		string = [[NSString alloc] initWithData: writeNVRAMdata encoding: NSUTF8StringEncoding];
-		
-		if (status == 0) {
-			*cmdout = @"Successfully updated the NVRAM.\n";
-			return 0;
-		} else {
-			*cmdout = string;
-			return status;
-		}
-		
-	} else {
-		*cmdout = @"File doesn't exist. Failed to update NVRAM from file.";
-				
-		return 1;
-	}
-}
-
-- (int) parseNVRAM:(NSString*)filePath
-{
-	NSMutableDictionary* dictnvram = [NSMutableDictionary dictionaryWithContentsOfFile:filePath];
-	
-	NSLog(@"%@", dictnvram);
-	
-	NSData* rawversion = [dictnvram objectForKey:@"opib-version"];
-	//Check openiboot is installed before we go any further
-	if (rawversion==nil) {
-		return -1;
-	}
-	
-	NSString* version = [NSString stringWithCString:[rawversion bytes] encoding:NSUTF8StringEncoding];
-	NSData* rawtimeout = [dictnvram objectForKey:@"opib-menu-timeout"];
-	NSString* timeout = [NSString stringWithCString:[rawtimeout bytes] encoding:NSUTF8StringEncoding];
-	NSData* rawdefaultos = [dictnvram objectForKey:@"opib-default-os"];
-	NSString* defaultos = [NSString stringWithCString:[rawdefaultos bytes] encoding:NSUTF8StringEncoding];
-	NSData* rawautoboot = [dictnvram objectForKey:@"opib-auto-boot"];
-	NSString* autoboot = [NSString stringWithCString:[rawautoboot bytes] encoding:NSUTF8StringEncoding];
-	
-	NSLog(@"%@", version);
-	NSLog(@"%@", timeout);
-	NSLog(@"%@", defaultos);
-	NSLog(@"%@", autoboot);
-	
-	dataclass *thisconfig = [dataclass nvramconfig];
-	
-	thisconfig.opibversion = version;
-	thisconfig.timeout = timeout;
-	thisconfig.defaultos = defaultos;
-	thisconfig.autoboot = autoboot;
-	
-	return 0;
-}
-
-- (int) generateNVRAM:(NSString *)filePath
-{
-	NSMutableDictionary* dictnvram = [NSMutableDictionary dictionaryWithContentsOfFile:filePath];
-	dataclass *thisconfig = [dataclass nvramconfig];
-	
-	NSLog(@"Old nvramconfig");
-	NSLog(@"%@", dictnvram);
-	
-	NSData *rawtimeout = [thisconfig.timeout dataUsingEncoding:NSUTF8StringEncoding];
-	NSData *rawdefaultos = [thisconfig.defaultos dataUsingEncoding:NSUTF8StringEncoding];
-	NSData *rawautoboot = [thisconfig.autoboot dataUsingEncoding:NSUTF8StringEncoding];
-	
-	if (rawtimeout!=nil && rawdefaultos!=nil && rawautoboot!=nil) {
-		[dictnvram setObject:rawtimeout forKey:@"opib-menu-timeout"];
-		[dictnvram setObject:rawdefaultos forKey:@"opib-default-os"];
-		[dictnvram setObject:rawautoboot forKey:@"opib-auto-boot"];	
-		[dictnvram writeToFile:filePath atomically:NO];
-	} else {
-		return -1;
-	}
-	
-	return 0;
-}
-
-- (int) grabNVRAM
-{
-	id grabnvramutils;
-	grabnvramutils=[nvramutils new];
-	
-	int backup = [grabnvramutils backupNVRAM];
+	int backup = [mynvramutils nvramBackup:NO];
 	
 	if (backup<0) {
 		NSLog(@"NVRAM Backup failed.");
 		return -1;
 	}
 	
-	NSString* plistPath = @"/var/mobile/Documents/NVRAM.plist";
-	
-	int getnew = [grabnvramutils getNVRAM:plistPath];
+	int getnew = [mynvramutils nvramDump:filePath];
 	
 	if (getnew!=0) {
 		NSLog(@"Failed to obtain working copy of NVRAM.");
 		return -2;
 	}
 	
-	int parsed = [grabnvramutils parseNVRAM:plistPath];
+	int parsed = [mynvramutils nvramParse:filePath];
 	
 	if (parsed==-1) {
-		NSLog(@"Openiboot not installed. Aborting.");
+		NSLog(@"NVRAM configuration corrupt or invalid.");
 		return -3;
+	} else if (parsed==-2) {
+		NSLog(@"Openiboot not installed. Aborting.");
+		return -4;
+	} else if (parsed==-3) {
+		NSLog(@"NVRAM configuration is corrupt. Aborting.");
+		return -5;
 	} else if (parsed!=0) {
 		NSLog(@"Failed to parse NVRAM dump.");
-		return -4;
+		return -6;
 	}
 	
+	return 0;
+}
+-(int)nvramReset
+{
+	id mynvramutils;
+	mynvramutils=[nvramutils new];
+	dataclass *thisconfig = [dataclass nvramconfig];
+
+	thisconfig.opibTimeout = @"10000";
+	thisconfig.opibDefaultOs = @"0";
+	thisconfig.opibAutoBoot = @"0";
+	
+	NSString* resetPath = @"/var/mobile/Documents/NVRAM.plist";
+	
+	int generated = [mynvramutils nvramGenerate:resetPath];
+	int updated;
+	
+	if(generated==0){
+		updated = [mynvramutils nvramWrite:resetPath];
+	} else {
+		UIAlertView *resetResults;
+		resetResults = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to reset NVRAM configuration." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[resetResults setTag:10];
+		[resetResults show];
+		[resetResults release];
+	}
+	if(updated==0){
+		[mynvramutils nvramInit];
+	} else {
+		UIAlertView *resetResults;
+		resetResults = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to reset NVRAM configuration." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[resetResults setTag:10];
+		[resetResults show];
+		[resetResults release];
+	}
 	return 0;
 }
 

@@ -6,11 +6,11 @@ INSTALLFOLDER=$(PROJECTNAME).app
 
 IPHONE_IP=192.168.0.105
 
-SDKVER=3.1.3
+SDKVER=3.0
 SDK=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDKVER).sdk
 
-CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-gcc-4.0.1
-CPP=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-g++-4.0.1
+CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-gcc-4.2.1
+CPP=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-g++-4.2.1
 LD=$(CC)
 
 LDFLAGS += -framework CoreFoundation 
@@ -41,7 +41,7 @@ CFLAGS += -I"$(SDK)/usr/include"
 CFLAGS += -I"/Developer/Platforms/iPhoneOS.platform/Developer/usr/include/"
 CFLAGS += -I/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator$(SDKVER).sdk/usr/include
 CFLAGS += -DDEBUG -std=c99
-CFLAGS += -Diphoneos_version_min=3.1.3
+CFLAGS += -Diphoneos_version_min=3.0
 CFLAGS += -F"$(SDK)/System/Library/Frameworks"
 CFLAGS += -F"$(SDK)/System/Library/PrivateFrameworks"
 

@@ -6,6 +6,7 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
+#import "nvramutils.h"
 #import <UIKit/UIKit.h>
 
 

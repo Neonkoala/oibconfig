@@ -10,16 +10,16 @@
 
 
 @interface dataclass : NSObject {
-	NSString *opibversion;
-	NSString *timeout;
-	NSString *defaultos;
-	NSString *autoboot;
+	NSString *opibVersion;
+	NSString *opibTimeout;
+	NSString *opibDefaultOs;
+	NSString *opibAutoBoot;
 }
 
-@property (nonatomic, retain) NSString *opibversion;
-@property (nonatomic, retain) NSString *timeout;
-@property (nonatomic, retain) NSString *defaultos;
-@property (nonatomic, retain) NSString *autoboot;
+@property (nonatomic, retain) NSString *opibVersion;
+@property (nonatomic, retain) NSString *opibTimeout;
+@property (nonatomic, retain) NSString *opibDefaultOs;
+@property (nonatomic, retain) NSString *opibAutoBoot;
 
 + (id)nvramconfig;
 
